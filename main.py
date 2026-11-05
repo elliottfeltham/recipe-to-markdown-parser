@@ -1,10 +1,12 @@
 import requests
 import html
 import json
+import os
 import sys
+from pathlib import Path
 from bs4 import BeautifulSoup
 
-RECIPES_FOLDER_PATH = "/Users/elliottfeltham/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsidiannotes/Areas/Recipes/"
+RECIPES_FOLDER_PATH = Path(os.environ.get("RECIPE_OUTPUT_DIR", ".")).expanduser()
 
 # URLs for testing purposes
 test_url = "https://www.allrecipes.com/recipe/30522/unbelievable-chicken/"
@@ -117,7 +119,13 @@ def format_recipe_to_markdown(recipe: dict):
     for index, step in enumerate(steps, start=1):
         method.append(f"{index}. {step}\n\n")
 
-    with open(f"{RECIPES_FOLDER_PATH}/{recipe["title"]}.md", "w") as file:
+    RECIPES_FOLDER_PATH.mkdir(parents=True, exist_ok=True)
+    filename = "".join(
+        character for character in recipe["title"] if character not in '<>:"/\\|?*'
+    ).strip()
+    output_path = RECIPES_FOLDER_PATH / f"{filename or 'recipe'}.md"
+
+    with output_path.open("w", encoding="utf-8") as file:
         # For my own obsidian tagging system
         file.write("> [!tags]- tags:\n")
 
@@ -150,6 +158,8 @@ def main():
     get_arguments()
     # Format recipe and write it to notes
     format_recipe_to_markdown(recipe)
-    print("Successfully saved to your notes!")
-                    
-main()
+    print(f"Successfully saved to {RECIPES_FOLDER_PATH.resolve()}!")
+
+
+if __name__ == "__main__":
+    main()
