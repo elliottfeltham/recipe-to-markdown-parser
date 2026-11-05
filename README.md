@@ -10,7 +10,6 @@ into Obsidian while learning HTML parsing and structured web data.
 - Handles string instructions, `HowToStep`, and nested instruction sections
 - Writes to a user-selected directory rather than a machine-specific path
 - Sanitises generated filenames and preserves the source URL
-- Separates network retrieval, parsing, formatting, and file output for testing
 
 ## Installation
 
@@ -27,25 +26,17 @@ On Windows PowerShell, activate with `.venv\\Scripts\\Activate.ps1`.
 ## Usage
 
 ```bash
-python main.py "https://example.com/recipe" --output-dir ./recipes
+RECIPE_OUTPUT_DIR=./recipes python main.py "https://example.com/recipe"
 ```
 
-The URL may be omitted to enter it interactively. The output directory defaults
-to the current directory and can also be set with `RECIPE_OUTPUT_DIR`.
+The URL may be omitted to enter it interactively. Output defaults to the current
+directory; set `RECIPE_OUTPUT_DIR` to save elsewhere.
 
 To inspect all JSON-LD blocks on a page while debugging:
 
 ```bash
-python json-reader.py "https://example.com/recipe"
+python json-reader.py
 ```
-
-## Tests
-
-```bash
-python -m unittest discover -s tests -v
-```
-
-GitHub Actions runs the test suite for pushes and pull requests to `main`.
 
 ## Limitations
 
@@ -53,12 +44,8 @@ GitHub Actions runs the test suite for pushes and pull requests to `main`.
   site-specific HTML.
 - Websites that render structured data only after client-side JavaScript runs
   are not supported.
-- Recipe publishers use inconsistent shapes, so incomplete objects are skipped.
+- Recipe publishers use inconsistent shapes, so some pages may not parse.
 - This is a learning-oriented CLI, not a general crawling service. Respect a
   site's terms, robots policy, and request limits.
 - A production-focused extractor should use a mature project such as
   [recipe-scrapers](https://github.com/hhursev/recipe-scrapers).
-
-## License
-
-Released under the [MIT License](LICENSE).
